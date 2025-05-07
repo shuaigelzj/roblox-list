@@ -15755,10 +15755,5 @@ var rows =
   "genreL2" : "Tower Obby",
   "createTime" : "2024-07-18T09:09:38.827Z",
   "updateTime" : "2025-05-03T10:19:50.683Z"
-}, {
-  "placeId" : 18459669354,
-  "universeId" : 6255803031,
-  "formattedName" : "Build a Boat Simulator",
-  "name" : "Build a Boat Simulator",
-  "imageUrl" : "https://tr.rbxcdn.com/180DAY-3470124368c2c348ec68da8f507a8fab/512/512/Image/Webp/noFilter",
-  "robloxUrl" : 
+}
+]
