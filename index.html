@@ -92,7 +92,14 @@
         </div>
     </div>
 </div>
-<script src="data.20250507134503.js"></script>
+<script type='text/javascript'>
+    var f = 'data.20250624111338.js'
+    var u = new URLSearchParams(location.search)
+    if(u.get("f")) {
+        f = u.get("f")
+    }
+    document.write('<script src="'+f+'"></sc' + 'ript>')
+</script>
 <!-- jQuery -->
 <script src="jquery.min.js"></script>
 <!-- Bootstrap 4 -->
