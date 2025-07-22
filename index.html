@@ -148,6 +148,7 @@ function load() {
     let params = new URLSearchParams(location.search)
     var nav = params.get("nav")
     var nav2 = params.get("nav2")
+    var f = params.get("f")
     page_length += 300;
     rows.sort((a, b) => b.playing - a.playing)
     if(nav != null) {
@@ -199,22 +200,22 @@ function load() {
     $("#_nav").empty()
     for (var k in cmap) {
         if(nav == null || k == nav) {
-            $("#_nav").append('<a href="index.html?nav='+k.replace("&", "%26")+'" class="m-1 badge badge-'+cmap[k]+'">'+k+' ('+sum(pmap.get(k))+')</a>');
+            $("#_nav").append('<a href="index.html?nav='+k.replace("&", "%26") + (f ? ("&f=" + f) : "") +'" class="m-1 badge badge-'+cmap[k]+'">'+k+' ('+sum(pmap.get(k))+')</a>');
         }
     }
     if(nav != null) {
-        $("#_nav").append('<a href="index.html" class="m-1 badge badge-secondary">x</a>');
+        $("#_nav").append('<a href="index.html'+(f ? ("?f=" + f) : "")+ '" class="m-1 badge badge-secondary">x</a>');
     }
     // nav 2
     if(nav != null) {
         $("#_nav").append('<span class="mr-2 badge">&gt;&gt;</span>');
         c2map.forEach(function(j) {
             if(nav2 == null || j == nav2) {
-                $("#_nav").append('<a href="index.html?nav='+nav.replace("&", "%26")+'&nav2='+j.replace("&", "%26")+'" class="m-1 badge badge-secondary">'+(j=="" ? "(empty)" : j)+' ('+sum(pmap.get(nav+"/" + j))+')</a>')
+                $("#_nav").append('<a href="index.html?nav='+nav.replace("&", "%26")+'&nav2='+j.replace("&", "%26") + (f ? ("&f=" + f) : "")+'" class="m-1 badge badge-secondary">'+(j=="" ? "(empty)" : j)+' ('+sum(pmap.get(nav+"/" + j))+')</a>')
             }
         })
         if(nav2 != null) {
-            $("#_nav").append('<a href="index.html?nav='+nav.replace("&", "%26")+'" class="m-1 badge badge-secondary">x</a>');
+            $("#_nav").append('<a href="index.html?nav='+nav.replace("&", "%26") + (f ? ("&f=" + f) : "")+'" class="m-1 badge badge-secondary">x</a>');
         }
     }
     offset = page_length;
