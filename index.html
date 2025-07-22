@@ -65,9 +65,17 @@
         <div class="content-header">
             <div class="container-fluid">
                 <div class="row mb-2">
-                    <div class="col-sm-6">
+                    <div class="col-sm-3">
                         <h1 class="m-0">List</h1>
                     </div><!-- /.col -->
+                    <div class="col-sm-3">
+                        <select id="_f" class="form-control">
+                            <option value="data.20250721170727.js">2025-07-21 17:07:27</option>
+                            <option value="data.20250624111338.js">2025-06-24 11:13:38</option>
+                            <option value="data.20250507134503.js">2025-05-07 13:45:03</option>
+                            <option value="data.20250228193612.js">2025-02-28 19:36:12</option>
+                        </select>
+                    </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
                             <li class="breadcrumb-item"><a href="#">Home</a></li>
@@ -92,20 +100,26 @@
         </div>
     </div>
 </div>
-<script type='text/javascript'>
-    var f = 'data.20250721170727.js'
-    var u = new URLSearchParams(location.search)
-    if(u.get("f")) {
-        f = u.get("f")
-    }
-    document.write('<script src="'+f+'"></sc' + 'ript>')
-</script>
 <!-- jQuery -->
 <script src="jquery.min.js"></script>
 <!-- Bootstrap 4 -->
 <script src="bootstrap.bundle.min.js"></script>
 <!-- AdminLTE App -->
 <script src="adminlte.js"></script>
+<script type='text/javascript'>
+    var f
+    var u = new URLSearchParams(location.search)
+    if(u.get("f")) {
+        f = u.get("f")
+        $("#_f option[value='"+f+"']").attr("selected", "selected")
+    } else {
+        f = $("#_f option:selected").val()
+    }
+    document.write('<script src="'+f+'"></sc' + 'ript>')
+    $("#_f").one("change", function() {
+        location.href="index.html?f=" + $(this).val()
+    })
+</script>
 <script>
 const cmap = {
     "Simulation": "danger",
@@ -182,6 +196,7 @@ function load() {
         $ctn.append($row);
     }
     // nav 1
+    $("#_nav").empty()
     for (var k in cmap) {
         if(nav == null || k == nav) {
             $("#_nav").append('<a href="index.html?nav='+k.replace("&", "%26")+'" class="m-1 badge badge-'+cmap[k]+'">'+k+' ('+sum(pmap.get(k))+')</a>');
