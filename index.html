@@ -147,6 +147,9 @@ var page_length = 0;
 var $ctn = $(".container-fluid .col-12");
 $(document).ready(load);
 function load() {
+    if(page_length >= rows.length) {
+        return
+    }
     let params = new URLSearchParams(location.search)
     var nav = params.get("nav")
     var nav2 = params.get("nav2")
