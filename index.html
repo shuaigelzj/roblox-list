@@ -65,11 +65,12 @@
         <div class="content-header">
             <div class="container-fluid">
                 <div class="row mb-2">
-                    <div class="col-sm-3">
+                    <div class="col-sm-2">
                         <h1 class="m-0">List</h1>
                     </div><!-- /.col -->
-                    <div class="col-sm-3">
+                    <div class="col-sm-2">
                         <select id="_f" class="form-control">
+                            <option value="data.20250819120426.js">2025-08-19 12:04:26</option>
                             <option value="data.20250804173232.js">2025-08-04 17:32:32</option>
                             <option value="data.20250729171939.js">2025-07-29 17:19:39</option>
                             <option value="data.20250721170727.js">2025-07-21 17:07:27</option>
@@ -77,6 +78,10 @@
                             <option value="data.20250507134503.js">2025-05-07 13:45:03</option>
                             <option value="data.20250228193612.js">2025-02-28 19:36:12</option>
                         </select>
+                    </div><!-- /.col -->
+                    <div class="col-sm-2">
+                        <input id="_s" class="form-control">
+                        </input>
                     </div>
                     <div class="col-sm-6">
                         <ol class="breadcrumb float-sm-right">
@@ -86,6 +91,8 @@
                     </div><!-- /.col -->
                 </div><!-- /.row -->
                 <div class="row ml-2" id="_nav">
+                </div>
+                <div class="row ml-2" id="_words">
                 </div>
             </div><!-- /.container-fluid -->
         </div>
@@ -109,6 +116,7 @@
 <!-- AdminLTE App -->
 <script src="adminlte.js"></script>
 <script type='text/javascript'>
+    //window.location.hash = ""
     var f
     var u = new URLSearchParams(location.search)
     if(u.get("f")) {
@@ -120,6 +128,25 @@
     document.write('<script src="'+f+'"></sc' + 'ript>')
     $("#_f").one("change", function() {
         location.href="index.html?f=" + $(this).val()
+    })
+</script>
+<script type='text/javascript'>
+    var _rows = rows
+    var iv
+    $("#_s").on("keyup", function() {
+        var text = $(this).val().toLowerCase()
+        if(iv) {
+            clearTimeout(iv)
+        }
+        iv = setTimeout(function() {
+            //window.location.hash = text
+            _rows = rows.filter((item) => item.name.toLowerCase().indexOf(text)>-1 || item.formattedName.toLowerCase().indexOf(text)>-1);
+            offset = 0;
+            page_length = 0;
+            pmap = new Map()
+            $(".container-fluid .col-12").empty();
+            load()
+        }, 300)
     })
 </script>
 <script>
@@ -141,13 +168,13 @@ const cmap = {
     "Puzzle": "purple-300",
     "Education": "purple-300",
 }
-const pmap = new Map()
+var pmap = new Map()
 var offset = 0;
 var page_length = 0;
 var $ctn = $(".container-fluid .col-12");
 $(document).ready(load);
 function load() {
-    if(page_length >= rows.length) {
+    if(page_length >= _rows.length) {
         return
     }
     let params = new URLSearchParams(location.search)
@@ -155,18 +182,18 @@ function load() {
     var nav2 = params.get("nav2")
     var f = params.get("f")
     page_length += 300;
-    rows.sort((a, b) => b.playing - a.playing)
+    _rows.sort((a, b) => b.playing - a.playing)
     if(nav != null) {
-        rows = rows.filter(c => c.genreL1 == nav);
+        _rows = _rows.filter(c => c.genreL1 == nav);
     }
     if(nav2 != null) {
-        rows = rows.filter(c => c.genreL2 == nav2);
+        _rows = _rows.filter(c => c.genreL2 == nav2);
     }
     const c2map = new Set();
     for (; offset < page_length; offset += 6) {
         const $row = $('<div class="row mt-4"></div>');
-        for (let i = 0; i < 6 && offset + i < Math.min(page_length, rows.length); i++) {
-            const item = rows[offset + i];
+        for (let i = 0; i < 6 && offset + i < Math.min(page_length, _rows.length); i++) {
+            const item = _rows[offset + i];
             c2map.add(item.genreL2)
             if(!pmap.has(item.genreL1)) {
                 pmap.set(item.genreL1, 0)
@@ -223,8 +250,48 @@ function load() {
             $("#_nav").append('<a href="index.html?nav='+nav.replace("&", "%26") + (f ? ("&f=" + f) : "")+'" class="m-1 badge badge-secondary">x</a>');
         }
     }
+    //word freq
+    feq()
     offset = page_length;
     scrollLoad = true;
+}
+function feq() {
+    var myMap = new Map()
+    for (const _row of _rows) {
+      var words = _row.formattedName.toLowerCase().split(" ")
+      for(const element of words) {
+          if(element.length<=1) {
+            continue
+          }
+          if (myMap.has(element)) {
+            myMap.set(element, myMap.get(element) + 1);
+          } else {
+            myMap.set(element, 1);
+          }
+      }
+      myMap.delete("the")
+      myMap.delete("in")
+      myMap.delete("to")
+      myMap.delete("and")
+      myMap.delete("of")
+      myMap.delete("game")
+      myMap.delete("or")
+      myMap.delete("my")
+      myMap.delete("your")
+      myMap.delete("for")
+      myMap.delete("is")
+      myMap.delete("with")
+      myMap.delete("are")
+      myMap.delete("on")
+      myMap.delete("from")
+      var arr = Array.from(myMap)
+      arr.sort(function(a,b) {return b[1]-a[1]})
+    }
+    $("#_words").empty()
+    arr = arr.slice(0,30)
+    for (var k in arr) {
+        $("#_words").append('<a href="#" class="m-1 badge badge-secondary">'+arr[k][0]+' ('+arr[k][1]+')</a>');
+    }
 }
 function sum(num) {
          if(num < 1000) {
