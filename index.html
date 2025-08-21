@@ -70,7 +70,7 @@
                     </div><!-- /.col -->
                     <div class="col-sm-2">
                         <select id="_f" class="form-control">
-                            <option value="data.20250819120426.js">2025-08-19 12:04:26</option>
+                            <option value="data.20250820175515.js">2025-08-20 17:55:15</option>
                             <option value="data.20250804173232.js">2025-08-04 17:32:32</option>
                             <option value="data.20250729171939.js">2025-07-29 17:19:39</option>
                             <option value="data.20250721170727.js">2025-07-21 17:07:27</option>
@@ -290,8 +290,12 @@ function feq() {
     $("#_words").empty()
     arr = arr.slice(0,30)
     for (var k in arr) {
-        $("#_words").append('<a href="#" class="m-1 badge badge-secondary">'+arr[k][0]+' ('+arr[k][1]+')</a>');
+        $("#_words").append('<a href="#" class="m-1 badge badge-secondary _word">'+arr[k][0]+' ('+arr[k][1]+')</a>');
     }
+    $("._word").click(function() {
+        $('#_s').val($(this).text().split("(")[0])
+        $('#_s').keyup();
+    })
 }
 function sum(num) {
          if(num < 1000) {
