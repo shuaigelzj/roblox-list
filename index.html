@@ -8,6 +8,7 @@
 
     <!-- Theme style -->
     <link rel="stylesheet" href="adminlte.min.css">
+    <link rel="stylesheet" href="fontawesome-free/css/all.min.css">
     <style>
 .img-fill {
     width: 100%;
@@ -69,23 +70,44 @@
                         <h1 class="m-0">List</h1>
                     </div><!-- /.col -->
                     <div class="col-sm-2">
-                        <select id="_f" class="form-control">
-                            <option value="data.20250901153412.js">2025-09-01 15:34:12</option>
-                            <option value="data.20250825173555.js">2025-08-25 17:35:55</option>
-                            <option value="data.20250820175515.js">2025-08-20 17:55:15</option>
-                            <option value="data.20250804173232.js">2025-08-04 17:32:32</option>
-                            <option value="data.20250729171939.js">2025-07-29 17:19:39</option>
-                            <option value="data.20250721170727.js">2025-07-21 17:07:27</option>
-                            <option value="data.20250624111338.js">2025-06-24 11:13:38</option>
-                            <option value="data.20250507134503.js">2025-05-07 13:45:03</option>
-                            <option value="data.20250228193612.js">2025-02-28 19:36:12</option>
-                        </select>
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"> <i class="fas fa-calendar"></i> </span>
+                            </div>
+                            <select id="_f" class="form-control">
+                                <option value="data.20250901153412.js">2025-09-01 15:34:12</option>
+                                <option value="data.20250825173555.js">2025-08-25 17:35:55</option>
+                                <option value="data.20250820175515.js">2025-08-20 17:55:15</option>
+                                <option value="data.20250804173232.js">2025-08-04 17:32:32</option>
+                                <option value="data.20250729171939.js">2025-07-29 17:19:39</option>
+                                <option value="data.20250721170727.js">2025-07-21 17:07:27</option>
+                                <option value="data.20250624111338.js">2025-06-24 11:13:38</option>
+                                <option value="data.20250507134503.js">2025-05-07 13:45:03</option>
+                                <option value="data.20250228193612.js">2025-02-28 19:36:12</option>
+                            </select>
+                        </div>
                     </div><!-- /.col -->
                     <div class="col-sm-2">
-                        <input id="_s" class="form-control">
-                        </input>
-                    </div>
-                    <div class="col-sm-6">
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"> <i class="fas fa-sort"></i> </span>
+                            </div>
+                            <select id="_o" class="form-control">
+                                <option value="ccu">CCU</option>
+                                <option value="ct">Created</option>
+                                <option value="both">CCU & Created</option>
+                            </select>
+                        </div>
+                    </div><!-- /.col -->
+                    <div class="col-sm-2">
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"> <i class="fas fa-search"></i> </span>
+                            </div>
+                            <input id="_s" type="text" class="form-control" placeholder="Search words">
+                        </div>
+                    </div><!-- /.col -->
+                    <div class="col-sm-4">
                         <ol class="breadcrumb float-sm-right">
                             <li class="breadcrumb-item"><a href="#">Home</a></li>
                             <li class="breadcrumb-item active">List</li>
@@ -119,7 +141,7 @@
 <script src="adminlte.js"></script>
 <script type='text/javascript'>
     //window.location.hash = ""
-    var f
+    var f,o
     var u = new URLSearchParams(location.search)
     if(u.get("f")) {
         f = u.get("f")
@@ -127,13 +149,31 @@
     } else {
         f = $("#_f option:selected").val()
     }
+    if(u.get("o")) {
+        o = u.get("o")
+        $("#_o option[value='"+o+"']").attr("selected", "selected")
+    } else {
+        o = $("#_o option:selected").val()
+    }
     document.write('<script src="'+f+'"></sc' + 'ript>')
     $("#_f").one("change", function() {
-        location.href="index.html?f=" + $(this).val()
+        var _u = new URLSearchParams(location.search)
+        _u.set("f",$(this).val())
+        location.href="index.html?" + _u.toString()
+    })
+    $("#_o").one("change", function() {
+        var _u = new URLSearchParams(location.search)
+        _u.set("o",$(this).val())
+        location.href="index.html?" + _u.toString()
     })
 </script>
 <script type='text/javascript'>
     var _rows = rows
+    _rows.forEach(item => item.created=new Date(item.createTime));
+    _rows.sort((a, b) => b.playing - a.playing)
+    _rows.forEach((item, index) => item.no1=index);
+    _rows.sort((a, b) => b.created - a.created)
+    _rows.forEach((item, index) => item.no2=index);
     var iv
     $("#_s").on("keyup", function() {
         var text = $(this).val().toLowerCase()
@@ -183,8 +223,15 @@ function load() {
     var nav = params.get("nav")
     var nav2 = params.get("nav2")
     var f = params.get("f")
+    var o = params.get("o")
     page_length += 300;
-    _rows.sort((a, b) => b.playing - a.playing)
+    if(o=="ct") {
+        _rows.sort((a, b) => a.no2 - b.no2)
+    } else if(o=="both") {
+        _rows.sort((a, b) => (a.no1+a.no2) - (b.no1+b.no2))
+    } else {
+        _rows.sort((a, b) => a.no1 - b.no1)
+    }
     if(nav != null) {
         _rows = _rows.filter(c => c.genreL1 == nav);
     }
@@ -213,11 +260,13 @@ function load() {
                         <div class="card-header">
                             <h3 class="card-title text-primary"><a target="_blank" href="${item.robloxUrl}">${item.name}</a></h3><br>
                             <div>
-                                <h6 class="sub-title">${item.formattedName}</h6>
+                                <h6 class="small text-secondary">${item.formattedName}</h6>
                                 <span class="float-left badge badge-${genreColor}">${item.genreL1}</span>
                                 <span class="float-left">&nbsp;</span>
                                 <span class="float-left badge badge-secondary">${item.genreL2}</span>
-                                <span class="float-right">${item.playing}</span>
+                                <br>
+                                <span class="float-left small text-secondary">${item.createTime.substring(0,10)}</span>
+                                <span class="float-right small text-bold">${item.playing.toLocaleString()}</span>
                             </div>
                         </div>
                         <div class="card-body">
@@ -234,28 +283,43 @@ function load() {
     $("#_nav").empty()
     for (var k in cmap) {
         if(nav == null || k == nav) {
-            $("#_nav").append('<a href="index.html?nav='+k.replace("&", "%26") + (f ? ("&f=" + f) : "") +'" class="m-1 badge badge-'+cmap[k]+'">'+k+' ('+sum(pmap.get(k))+')</a>');
+            $("#_nav").append('<a href="javascript:nav(\''+k+'\');" class="m-1 badge badge-'+cmap[k]+'">'+k+' ('+sum(pmap.get(k))+')</a>');
         }
     }
     if(nav != null) {
-        $("#_nav").append('<a href="index.html'+(f ? ("?f=" + f) : "")+ '" class="m-1 badge badge-secondary">x</a>');
+        $("#_nav").append('<a href="javascript:nav();" class="m-1 badge badge-secondary">x</a>');
     }
     // nav 2
     if(nav != null) {
         $("#_nav").append('<span class="mr-2 badge">&gt;&gt;</span>');
         c2map.forEach(function(j) {
             if(nav2 == null || j == nav2) {
-                $("#_nav").append('<a href="index.html?nav='+nav.replace("&", "%26")+'&nav2='+j.replace("&", "%26") + (f ? ("&f=" + f) : "")+'" class="m-1 badge badge-secondary">'+(j=="" ? "(empty)" : j)+' ('+sum(pmap.get(nav+"/" + j))+')</a>')
+                $("#_nav").append('<a href="javascript:nav(\''+nav+'\',\''+j+'\');" class="m-1 badge badge-secondary">'+(j=="" ? "(empty)" : j)+' ('+sum(pmap.get(nav+"/" + j))+')</a>')
             }
         })
         if(nav2 != null) {
-            $("#_nav").append('<a href="index.html?nav='+nav.replace("&", "%26") + (f ? ("&f=" + f) : "")+'" class="m-1 badge badge-secondary">x</a>');
+            $("#_nav").append('<a href="javascript:nav(\''+nav+'\');" class="m-1 badge badge-secondary">x</a>');
         }
     }
     //word freq
     feq()
     offset = page_length;
     scrollLoad = true;
+}
+function nav(_nav,_nav2) {
+    var _u = new URLSearchParams(location.search)
+    if(_nav) {
+        _u.set("nav",_nav)
+        if(_nav2) {
+            _u.set("nav2",_nav2)
+        } else {
+            _u.delete("nav2")
+        }
+    } else {
+        _u.delete("nav")
+        _u.delete("nav2")
+    }
+    location.href="index.html?" + _u.toString()
 }
 function feq() {
     var myMap = new Map()
@@ -300,7 +364,7 @@ function feq() {
     })
 }
 function sum(num) {
-         if(num < 1000) {
+  if(num < 1000) {
     return "" + num
   } else if(num < 10000) {
     return (num / 1000).toFixed(2) + "k"
